@@ -157,9 +157,7 @@ public class TransactionController {
                 }
             }
 
-            if (hasNegative) {
-                res = 0;
-            } else {
+            if (!hasNegative) {
                 res = small + large;
             }
 
