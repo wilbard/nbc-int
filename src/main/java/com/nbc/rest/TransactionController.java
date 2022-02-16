@@ -8,6 +8,7 @@ import com.nbc.service.NbcStaticService;
 import com.nbc.service.PartnerTransactionService;
 import com.nbc.util.EmailUtilities;
 import com.nbc.util.NbcUtilities;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -134,5 +135,37 @@ public class TransactionController {
         }
         response.put("code", httpStatus.value());
         return new ResponseEntity<>(response.toString(), httpStatus);
+    }
+
+    @RequestMapping(value = "/array", method = RequestMethod.GET)
+    public int getArray(@RequestBody int[] ids) {
+        int res = 0;
+        try {
+
+            int small = 0;
+            int large = 0;
+            boolean hasNegative = false;
+            for(int i=0; i<ids.length; i++) {
+                if (ids[i] < small) {
+                    small = ids[i];
+                }
+                if (ids[i] > large) {
+                    large = ids[i];
+                }
+                if (ids[i] < 0) {
+                    hasNegative = true;
+                }
+            }
+
+            if (hasNegative) {
+                res = 0;
+            } else {
+                res = small + large;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return res;
     }
 }

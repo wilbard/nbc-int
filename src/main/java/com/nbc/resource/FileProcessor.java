@@ -1,5 +1,6 @@
 package com.nbc.resource;
 
+import com.google.gson.Gson;
 import com.nbc.model.PartnerTransaction;
 import com.nbc.service.PartnerTransactionService;
 import com.nbc.util.NbcUtilities;
@@ -11,6 +12,8 @@ import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -20,6 +23,8 @@ import java.util.List;
 
 @Component
 public class FileProcessor {
+
+    Logger logger = LoggerFactory.getLogger(PartnerTransaction.class);
     
     private NbcUtilities nbcUtilities;
     private PartnerTransactionService partnerTransactionService;
@@ -90,7 +95,8 @@ public class FileProcessor {
                     partnerTransactionData.setAccount(account);
                     partnerTransactionData.setAmount(amount);
                     partnerTransactionData.setInstitution(institution.toUpperCase());
-                    this.partnerTransactionService.addPartnerTransaction(partnerTransactionData);
+                    PartnerTransaction results = this.partnerTransactionService.newPartnerTransaction(partnerTransactionData);
+                    logger.info(new Gson().toJson(results));
                 }
             }
             fis.close();
