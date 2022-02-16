@@ -46,7 +46,7 @@ public class BTransactionService {
     }
 
     public BTransaction findByTransactionRef(String transactionRef) {
-        return this.findByTransactionRef(transactionRef);
+        return this.bTransactionRepository.findByTransactionRef(transactionRef);
     }
 
     public Page<BTransaction> findAll(int page, int limit, String sort, String order) {

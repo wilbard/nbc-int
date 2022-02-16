@@ -35,14 +35,14 @@ public class EmailUtilities {
         }
     }
 
-    public boolean sendWebsiteEmail(String toEmail, String subject, String htmlMessage) throws MessagingException, IOException {
+    public boolean sendWebsiteEmail(String subject, String htmlMessage) throws MessagingException, IOException {
         boolean res = true;
         try {
             MimeMessage msg = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(msg, true);
 
             helper.setFrom("hekima.website@gmail.com");
-            helper.setTo(toEmail);
+            helper.setTo("wishirima@gmail.com");
             helper.setBcc("willydammas@gmail.com");
             /*helper.setReplyTo(fromEmail, fromName);*/
 

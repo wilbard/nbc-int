@@ -26,10 +26,10 @@ import java.util.Collections;
 @Component
 public class NbcUtilities {
 
-    public void sendEmail(String smsApi) {
+    public void sendReport(String smsApi) {
         CloseableHttpClient httpClient = HttpClients.custom().setRedirectStrategy(new LaxRedirectStrategy()).build();
         try {
-            HttpPost post = new HttpPost("https://httpbin.org/put");
+            HttpPost post = new HttpPost("https://httpbin.org/post");
             post.setHeader("Content-type", "application/json");
             post.setEntity(new StringEntity(smsApi));
 

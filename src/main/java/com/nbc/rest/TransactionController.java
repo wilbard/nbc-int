@@ -1,5 +1,6 @@
 package com.nbc.rest;
 
+import com.google.gson.Gson;
 import com.nbc.model.PartnerTransaction;
 import com.nbc.resource.FileProcessor;
 import com.nbc.service.BTransactionService;
@@ -84,30 +85,47 @@ public class TransactionController {
         return new ResponseEntity<>(response.toString(), httpStatus);
     }
 
-    @RequestMapping(value = "/send/email", method = RequestMethod.POST)
+    @RequestMapping(value = "/send/email", method = RequestMethod.GET)
     public ResponseEntity<String> sendWebsiteEmail() {
         JSONObject response = new JSONObject();
         HttpStatus httpStatus;
         try {
-            List<PartnerTransaction> Xtransactions = this.partnerTransactionService.findAll("X");
+
+            /*X Report*/
+            List<PartnerTransaction> xTransactions = this.partnerTransactionService.findAll("X");
             double xSum = 0;
-            for (PartnerTransaction transaction : Xtransactions) {
+            for (PartnerTransaction transaction : xTransactions) {
                 if (this.bTransactionService.findByTransactionRef(transaction.getTransactionRef()) != null) {
                     xSum = xSum + transaction.getAmount();
                 }
             }
-            JSONObject dataJson = new JSONObject();
-            String subject = "Bank B and Company X Total Mismatch Amount for February 16 is" + this.nbcUtilities.amountFormat(xSum);
-            String message = dataJson.getString("message") + "\n\n" + "Phone: " + dataJson.getString("phone");
-            if (this.emailUtilities.sendWebsiteEmail(dataJson.getString("from"), dataJson.getString("name"), dataJson.getString("email"), subject, message)) {
+            String xSubject = "Bank B and Company X Total Mismatch Amount for February 16 is" + this.nbcUtilities.amountFormat(xSum);
+            String xTxn = new Gson().toJson(xTransactions);
+            if (this.emailUtilities.sendWebsiteEmail(xSubject, xTxn)) {
                 httpStatus = HttpStatus.OK;
                 response.put("status", "success");
-                response.put("message", "Email sent successfully");
+                response.put("message", "Email for X sent successfully");
             } else {
                 httpStatus = HttpStatus.EXPECTATION_FAILED;
                 response.put("status", "failed");
-                response.put("message", "Failed to send email");
+                response.put("message", "Failed to send email for X");
             }
+
+            /*Y Report*/
+            List<PartnerTransaction> yTransactions = this.partnerTransactionService.findAll("X");
+            double ySum = 0;
+            for (PartnerTransaction transaction : yTransactions) {
+                if (this.bTransactionService.findByTransactionRef(transaction.getTransactionRef()) != null) {
+                    ySum = ySum + transaction.getAmount();
+                }
+            }
+            String ySubject = "Bank B and Company Y Total Mismatch Amount for February 16 is" + this.nbcUtilities.amountFormat(ySum);
+            String yTxn = new Gson().toJson(yTransactions);
+            JSONObject yReportJson = new JSONObject();
+            yReportJson.put("message", ySubject);
+            yReportJson.put("mismatchAmount", ySum);
+            yReportJson.put("transactions", yTxn);
+            this.nbcUtilities.sendReport(yReportJson.toString());
         } catch (Exception e) {
             e.printStackTrace();
             httpStatus = HttpStatus.BAD_REQUEST;
